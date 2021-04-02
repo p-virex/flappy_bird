@@ -6,15 +6,13 @@ WIDTH, HEIGHT = (500, 500)
 
 screen = pygame.display.set_mode((WIDTH, HEIGHT))
 
-# load_bg = pygame.image.load('bg1.png')
-# bg = pygame.transform.scale(load_bg, (WIDTH, HEIGHT))
-bg = pygame.transform.smoothscale(pygame.image.load('bg1.png'), (WIDTH, HEIGHT))
+bg = pygame.transform.scale(pygame.image.load('bg1.png'), (WIDTH, HEIGHT))
 clock = pygame.time.Clock()
 
 game = True
 
 pos_x = 0
-speed = 10
+speed = 5
 
 
 class Bird(pygame.sprite.Sprite):
@@ -39,8 +37,7 @@ class Bird(pygame.sprite.Sprite):
 class Pipes(pygame.sprite.Sprite):
     def __init__(self):
         super(Pipes, self).__init__()
-        self.image = pygame.image.load('pipes.png').convert_alpha()
-        self.mask = pygame.mask.from_surface(self.image)
+        self.image = pygame.image.load('pipes.png')
         self.rect = self.image.get_rect()
         self.rect.x = WIDTH
 
@@ -50,9 +47,6 @@ class Pipes(pygame.sprite.Sprite):
             self.rect.x = WIDTH
             self.rect.y = choice([0, -20, -30, -50, -70, -90, -110, -130, -150, -170, -200, -220, -250])
 
-    def is_collided(self, sprite):
-        return self.rect.colliderect(sprite.rect)
-
 
 bird = Bird()
 pipes = Pipes()
@@ -61,6 +55,8 @@ group.add(bird)
 group.add(pipes)
 
 while game is True:
+    pressed = False
+
     clock.tick(20)
     for e in pygame.event.get():
         if e.type == pygame.QUIT:
@@ -73,10 +69,9 @@ while game is True:
     pressed_keys = pygame.key.get_pressed()
     if pressed_keys[pygame.K_SPACE]:
         bird.rect.y -= 10
+        pressed = True
     group.update()
-
-    check_collided = pygame.sprite.spritecollide(pipes, group, False, pygame.sprite.collide_mask)
-    if len(check_collided) > 1:
+    if pygame.sprite.collide_mask(bird, pipes):
         game = False
         pygame.time.delay(5000)
 
