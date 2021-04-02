@@ -2,7 +2,9 @@ from random import choice
 
 import pygame
 
+pygame.init()
 WIDTH, HEIGHT = (500, 500)
+ARIAL_FONT_M = pygame.font.SysFont('rage', 30)
 
 screen = pygame.display.set_mode((WIDTH, HEIGHT))
 
@@ -25,7 +27,7 @@ class Bird(pygame.sprite.Sprite):
         self.rect.x, self.rect.y = (100, 100)
 
     def update(self):
-        self.rect.y += 3
+        self.rect.y += 6
         if self.rect.y >= HEIGHT - self.rect.height:
             self.rect.y = HEIGHT - self.rect.height
         self.index += 1
@@ -40,12 +42,14 @@ class Pipes(pygame.sprite.Sprite):
         self.image = pygame.image.load('pipes.png')
         self.rect = self.image.get_rect()
         self.rect.x = WIDTH
+        self.score = 0
 
     def update(self):
         self.rect.x -= 3
         if self.rect.x + self.rect.width < 0:
             self.rect.x = WIDTH
             self.rect.y = choice([0, -20, -30, -50, -70, -90, -110, -130, -150, -170, -200, -220, -250])
+            self.score += 1
 
 
 bird = Bird()
@@ -74,6 +78,7 @@ while game is True:
     if pygame.sprite.collide_mask(bird, pipes):
         game = False
         pygame.time.delay(5000)
-
     group.draw(screen)
+    text = ARIAL_FONT_M.render(f'Score: {pipes.score}', True, (0, 0, 0))
+    screen.blit(text, (20, 20))
     pygame.display.update()
